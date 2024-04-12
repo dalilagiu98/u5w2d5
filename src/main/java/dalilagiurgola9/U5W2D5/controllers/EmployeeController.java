@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/employees")
@@ -32,11 +35,24 @@ public class EmployeeController {
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     private Employee saveNewEmployee(@RequestBody @Validated EmployeeDTO body, BindingResult validation){
-        if (validation.hasErrors()) throw new BadRequestException(validation.get)
+        if (validation.hasErrors()) throw new BadRequestException(validation.getAllErrors());
+        else return this.employeeService.save(body);
     }
 
     @PutMapping("/{id}")
-    private Employee findByIdAndUpdate(@PathVariable long id, @RequestBody Employee body) {
+    private Employee findByIdAndUpdate(@PathVariable long id, @RequestBody @Validated EmployeeDTO body, BindingResult validation) {
+        if(validation.hasErrors()) throw new BadRequestException(validation.getAllErrors());
+        else return this.employeeService.findByIdAndUpdate(id, body);
+    }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void deleteEmployee(@PathVariable long id) {
+        this.employeeService.findByIdAndDelete(id);
+    }
+
+    @PatchMapping("/{id}/upload")
+    private Employee uploadAvatar(@PathVariable long id, @RequestParam("avatar")MultipartFile image) throws IOException {
+        return this.employeeService.changeAvatarImage(id, image);
     }
 }

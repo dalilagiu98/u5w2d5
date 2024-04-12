@@ -1,5 +1,6 @@
 package dalilagiurgola9.U5W2D5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class Employee {
     private String email;
     private String avatarImage;
     @OneToMany(mappedBy = "employee")
+    @JsonIgnore
     private List<Device> assignedDevicesList;
 
     //CONSTRUCTOR:

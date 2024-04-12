@@ -1,10 +1,13 @@
 package dalilagiurgola9.U5W2D5.controllers;
 
 import dalilagiurgola9.U5W2D5.entities.Device;
+import dalilagiurgola9.U5W2D5.exceptions.BadRequestException;
+import dalilagiurgola9.U5W2D5.payloads.DeviceDTO;
 import dalilagiurgola9.U5W2D5.services.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +30,14 @@ public class DeviceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    private Device saveNewDevice(@RequestBody Device body){
+    private Device saveNewDevice(@RequestBody @Validated DeviceDTO body, BindingResult validation){
+        if(validation.hasErrors()) throw new BadRequestException(validation.getAllErrors());
         return this.deviceService.save(body);
     }
 
     @PutMapping("/{id}")
-    private Device findDeviceByIdAndUpdate(@PathVariable long id, @RequestBody Device body){
+    private Device findDeviceByIdAndUpdate(@PathVariable long id, @RequestBody @Validated DeviceDTO body, BindingResult validation){
+        if (validation.hasErrors()) throw new BadRequestException(validation.getAllErrors());
         return this.deviceService.findByIdAndUpdate(id, body);
     }
 
